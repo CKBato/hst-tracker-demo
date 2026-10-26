@@ -6,6 +6,7 @@
     "registration_number_required_from": 30.00,
     "_note": "Simplified threshold. Verify current CRA documentation requirements."
   },
+  "ocr": {"min_confidence": 70},
   "categories": {
     "office_supplies":   {"label": "Office supplies",    "itc_pct": 1.0, "expects_tax": true,  "reason": "Business expense: full HST credit."},
     "fuel":              {"label": "Fuel",               "itc_pct": 1.0, "expects_tax": true,  "reason": "Fuel: full credit assumes 100% business use. Adjust for personal use."},

@@ -18,3 +18,6 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+
+# Receipt photos and ledger created by the app (private data)
+store/

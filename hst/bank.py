@@ -1,7 +1,9 @@
 """Bank statement lines: match to receipts, or classify and estimate when there is no receipt."""
 import csv
+import io
 import re
-from datetime import date
+from datetime import date, datetime
+from pathlib import Path
 from decimal import Decimal
 
 from .rules import back_calculate, category_for, itc_pct
@@ -10,10 +12,63 @@ ZERO = Decimal("0.00")
 WINDOW_DAYS = (-1, 5)  # bank posting date minus receipt date
 
 
+DATE_FORMATS = ["%Y-%m-%d", "%m/%d/%Y"]  # ISO or Canadian-bank MM/DD/YYYY. Anything else is skipped.
+HEADERS = {
+    "date": ("date", "transaction date", "posted date", "posting date"),
+    "description": ("description", "details", "memo", "payee", "transaction description"),
+    "amount": ("amount",),
+    "debit": ("debit", "withdrawal", "withdrawals", "money out"),
+    "credit": ("credit", "deposit", "deposits", "money in"),
+}
+
+
+def _parse_date(raw):
+    for fmt in DATE_FORMATS:
+        try:
+            return datetime.strptime(raw.strip(), fmt).date().isoformat()
+        except ValueError:
+            continue
+    return None
+
+
+def _money(raw):
+    raw = (raw or "").replace("$", "").replace(",", "").strip()
+    neg = raw.startswith("(") and raw.endswith(")")
+    raw = raw.strip("()")
+    if not raw:
+        return None
+    try:
+        value = Decimal(raw)
+    except ArithmeticError:
+        return None
+    return -value if neg else value
+
+
+def parse_bank_csv(text):
+    """Flexible bank CSV: amount column (negative = money out) or separate debit/credit columns.
+    Returns (rows, skipped_count)."""
+    reader = csv.DictReader(io.StringIO(text))
+    cols = {(h or "").strip().lower(): h for h in (reader.fieldnames or [])}
+    pick = {k: next((cols[n] for n in names if n in cols), None) for k, names in HEADERS.items()}
+    rows, skipped = [], 0
+    for r in reader:
+        when = _parse_date(r.get(pick["date"], "")) if pick["date"] else None
+        desc = (r.get(pick["description"]) or "").strip() if pick["description"] else ""
+        if pick["amount"]:
+            amount = _money(r.get(pick["amount"]))
+        else:
+            debit = _money(r.get(pick["debit"])) if pick["debit"] else None
+            credit = _money(r.get(pick["credit"])) if pick["credit"] else None
+            amount = -abs(debit) if debit else (abs(credit) if credit else None)
+        if when and desc and amount is not None:
+            rows.append({"date": when, "description": desc, "amount": amount})
+        else:
+            skipped += 1
+    return rows, skipped
+
+
 def read_bank_csv(path):
-    with open(path, newline="", encoding="utf-8") as fh:
-        return [{"date": r["date"], "description": r["description"], "amount": Decimal(r["amount"])}
-                for r in csv.DictReader(fh)]
+    return parse_bank_csv(Path(path).read_text(encoding="utf-8-sig"))[0]
 
 
 def _tokens(s):
