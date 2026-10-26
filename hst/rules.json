@@ -1,0 +1,37 @@
+{
+  "_note": "Demo rules for Ontario HST (13%). Simplified for illustration. NOT tax advice: an accountant must review these before real use.",
+  "province": "ON",
+  "hst_rate": 0.13,
+  "documentation": {
+    "registration_number_required_from": 30.00,
+    "_note": "Simplified threshold. Verify current CRA documentation requirements."
+  },
+  "categories": {
+    "office_supplies":   {"label": "Office supplies",    "itc_pct": 1.0, "expects_tax": true,  "reason": "Business expense: full HST credit."},
+    "fuel":              {"label": "Fuel",               "itc_pct": 1.0, "expects_tax": true,  "reason": "Fuel: full credit assumes 100% business use. Adjust for personal use."},
+    "phone_internet":    {"label": "Phone and internet", "itc_pct": 1.0, "expects_tax": true,  "reason": "Business telecom: full HST credit."},
+    "software":          {"label": "Software",           "itc_pct": 1.0, "expects_tax": true,  "reason": "Business software: full HST credit."},
+    "professional_fees": {"label": "Professional fees",  "itc_pct": 1.0, "expects_tax": true,  "reason": "Accounting/legal fees for the business: full HST credit."},
+    "meals":             {"label": "Meals",              "itc_pct": 0.5, "expects_tax": true,  "reason": "Meals and entertainment: only 50% of the HST is claimable."},
+    "entertainment":     {"label": "Entertainment",      "itc_pct": 0.5, "expects_tax": true,  "reason": "Meals and entertainment: only 50% of the HST is claimable."},
+    "club_membership":   {"label": "Club membership",    "itc_pct": 0.0, "expects_tax": true,  "reason": "Club memberships (gym, golf) are not claimable."},
+    "personal":          {"label": "Personal",           "itc_pct": 0.0, "expects_tax": true,  "reason": "Personal expense: not claimable."},
+    "groceries":         {"label": "Basic groceries",    "itc_pct": 0.0, "expects_tax": false, "reason": "Basic groceries are zero-rated: no HST charged, nothing to claim."},
+    "insurance":         {"label": "Insurance",          "itc_pct": 0.0, "expects_tax": false, "reason": "Insurance premiums are exempt: no HST charged, nothing to claim."},
+    "bank_fees":         {"label": "Bank fees",          "itc_pct": 0.0, "expects_tax": false, "reason": "Most bank fees are exempt financial services: no HST."}
+  },
+  "vendor_keywords": {
+    "staples": "office_supplies", "home depot": "office_supplies",
+    "petro": "fuel", "shell": "fuel",
+    "bell": "phone_internet", "rogers": "phone_internet",
+    "adobe": "software", "microsoft": "software",
+    "keg": "meals", "boston pizza": "meals", "tim hortons": "meals",
+    "ticketmaster": "entertainment",
+    "accounting": "professional_fees",
+    "goodlife": "club_membership",
+    "sephora": "personal",
+    "loblaws": "groceries",
+    "intact": "insurance"
+  },
+  "bank_non_taxable_keywords": ["service fee", "payroll", "e-transfer", "loan interest", "cra payment", "transfer"]
+}
