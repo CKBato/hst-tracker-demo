@@ -27,7 +27,7 @@ python -m unittest discover -s tests -t .
 ```
 The UI has **Check a receipt** (paste or open a text receipt, see fields, status and reasons) and **Period dashboard** (generate a batch, browse receipts, bank lines and missing receipts, approve or reject held items).
 
-## Results (60 synthetic receipts, 55 bank lines, seed 7)
+## Results (60 synthetic receipts, 64 bank lines, seed 7)
 | Metric | Result |
 |---|---|
 | Receipt status matches expected | 100% (7 defect types, 60/60) |
